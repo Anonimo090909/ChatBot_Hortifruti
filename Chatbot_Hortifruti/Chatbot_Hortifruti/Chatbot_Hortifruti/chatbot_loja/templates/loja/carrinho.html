@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Carrinho</title>
+</head>
+<body>
+    <h1>🛒 Meu Carrinho</h1>
+
+    {% if itens %}
+        {% for item in itens %}
+            <div>
+                <h2>{{ item.nome }}</h2>
+                <p>Preço unitário: R$ {{ item.preco|floatformat:2 }}</p>
+                
+<p>Quantidade:</p>
+
+<div style="display: flex; align-items: center; gap: 10px;">
+    <form method="POST" action="{% url 'carrinho' %}">
+        {% csrf_token %}
+        <input type="hidden" name="produto_id" value="{{ item.id }}">
+        <input type="hidden" name="acao" value="diminuir">
+        <button type="submit">−</button>
+    </form>
+
+    <strong>{{ item.quantidade }}</strong>
+
+    <form method="POST" action="{% url 'carrinho' %}">
+        {% csrf_token %}
+        <input type="hidden" name="produto_id" value="{{ item.id }}">
+        <input type="hidden" name="acao" value="aumentar">
+        <button type="submit">+</button>
+    </form>
+</div>
+
+               
+                <form method="POST" action="{% url 'remover_produto' item.id %}">
+                    {% csrf_token %}
+                    <button type="submit">Remover produto</button>
+                </form>
+                
+
+                <p>Subtotal: R$ {{ item.subtotal|floatformat:2 }}</p>
+            </div>
+            <hr>
+        {% endfor %}
+
+        <h2>Total da compra: R$ {{ total|floatformat:2 }}</h2>
+        <br>
+<a href="{% url 'finalizar_compra' %}">
+    <button type="button">Finalizar compra</button>
+</a>
+
+    {% else %}
+        <p>Seu carrinho está vazio.</p>
+    {% endif %}
+
+
+    <a href="/produtos/">Continuar comprando</a>
+    <br><br>
+    <a href="/">Voltar para o início</a>
+</body>
+</html>

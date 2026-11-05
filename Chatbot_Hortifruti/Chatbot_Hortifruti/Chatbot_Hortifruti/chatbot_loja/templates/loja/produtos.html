@@ -1,0 +1,70 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+<title>Produtos - Chatbot Hortifruti</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 20px;
+    }
+
+    h1 {
+        color: #d35400;
+        text-align: center;
+    }
+
+    div {
+        background-color: white;
+        padding: 15px;
+        margin: 15px 0;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px #cccccc;
+    }
+
+    button {
+        background-color: #27ae60;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #219150;
+    }
+</style>
+</head>
+<body>
+    <h1>Produtos da nossa loja</h1>
+    <p>🛒 Itens no carrinho: {{ quantidade_carrinho }}</p>
+    <p>
+    <a href="/carrinho/">Ver meu carrinho</a>
+</p>
+
+    {% for produto in produtos %}
+        <div>
+            <h2>{{ produto.nome }}</h2>
+            <p>Preço: R$ {{ produto.preco|floatformat:2 }}</p>
+
+            
+<form method="POST" action="/produtos/">
+    {% csrf_token %}
+    <input type="hidden" name="produto_id" value="{{ produto.id }}">
+    <button type="submit">Adicionar ao carrinho</button>
+</form>
+
+        </div>
+        <hr>
+    {% endfor %}
+
+    <a href="/">Voltar para o início</a>
+</body>
+</html>

@@ -1,0 +1,217 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot - Frango Assado</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .chat {
+            max-width: 500px;
+            margin: 30px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px #ccc;
+        }
+
+        h1 {
+            color: #d35400;
+            text-align: center;
+        }
+
+        #mensagens {
+            min-height: 200px;
+            max-height: 350px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+
+        .bot {
+            color: #207a40;
+            margin: 12px 0;
+        }
+
+        .cliente {
+            color: #174ea6;
+            margin: 12px 0;
+        }
+
+        form {
+            display: flex;
+            gap: 8px;
+        }
+
+        input {
+            flex: 1;
+            min-width: 0;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+.atalhos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.atalhos a {
+    display: block;
+    background: #fff3e0;
+    color: #d35400;
+    text-decoration: none;
+    padding: 12px 8px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+    border: 1px solid #f0c28b;
+}
+
+.atalhos a:hover {
+    background: #d35400;
+    color: white;
+}
+    </style>
+</head>
+<body>
+    <div class="chat">
+        <h1>🤖 Chat da nossa loja</h1>
+
+        <div id="mensagens">
+            <p class="bot">
+                Chatbot: Olá! Bem-vindo à nossa loja de frango assado.
+                Como posso ajudar?
+            </p>
+        </div>
+
+<div class="atalhos">
+    <a href="/produtos/">🍗 Ver cardápio</a>
+    <a href="/carrinho/">🛒 Meu carrinho</a>
+    <a href="/finalizar-compra/">💳 Finalizar compra</a>
+    <a href="/acompanhar-pedido/">📦 Acompanhar pedido</a>
+</div>
+
+        <form id="formulario">
+            <input
+                type="text"
+                id="mensagem"
+                placeholder="Digite sua mensagem..."
+                autocomplete="off"
+                required
+            >
+            <button type="submit">Enviar</button>
+        </form>
+
+        <p><a href="/">Voltar para o início</a></p>
+    </div>
+
+    <script>
+        const formulario = document.getElementById("formulario");
+        const campoMensagem = document.getElementById("mensagem");
+        const mensagens = document.getElementById("mensagens");
+
+        formulario.addEventListener("submit", async function(evento) {
+            evento.preventDefault();
+
+            const texto = campoMensagem.value.trim();
+
+            if (!texto) return;
+
+            const mensagemCliente = document.createElement("p");
+            mensagemCliente.className = "cliente";
+            mensagemCliente.textContent = "Você: " + texto;
+            mensagens.appendChild(mensagemCliente);
+
+            campoMensagem.value = "";
+
+            try {
+                const resposta = await fetch("/responder-chatbot/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCookie("csrftoken")
+                    },
+                    body: JSON.stringify({ mensagem: texto })
+                });
+
+                const dados = await resposta.json();
+
+                
+const mensagemBot = document.createElement("p");
+mensagemBot.className = "bot";
+mensagemBot.textContent = "Chatbot: " + dados.resposta;
+mensagens.appendChild(mensagemBot);
+
+// Mostrar link do WhatsApp quando existir
+if (dados.link) {
+    const botaoWhatsApp = document.createElement("a");
+
+    botaoWhatsApp.href = dados.link;
+    botaoWhatsApp.textContent = "📱 " + dados.texto_link;
+    botaoWhatsApp.target = "_blank";
+    botaoWhatsApp.rel = "noopener noreferrer";
+
+    botaoWhatsApp.style.display = "block";
+    botaoWhatsApp.style.background = "#25D366";
+    botaoWhatsApp.style.color = "white";
+    botaoWhatsApp.style.padding = "12px";
+    botaoWhatsApp.style.margin = "10px 0";
+    botaoWhatsApp.style.borderRadius = "8px";
+    botaoWhatsApp.style.textAlign = "center";
+    botaoWhatsApp.style.textDecoration = "none";
+    botaoWhatsApp.style.fontWeight = "bold";
+
+    mensagens.appendChild(botaoWhatsApp);
+}
+
+
+            } catch (erro) {
+                const mensagemErro = document.createElement("p");
+                mensagemErro.className = "bot";
+                mensagemErro.textContent =
+                    "Não consegui responder agora. Tente novamente.";
+                mensagens.appendChild(mensagemErro);
+            }
+
+            mensagens.scrollTop = mensagens.scrollHeight;
+        });
+
+        function getCookie(nome) {
+            const cookies = document.cookie.split(";");
+
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+
+                if (cookie.startsWith(nome + "=")) {
+                    return decodeURIComponent(
+                        cookie.substring(nome.length + 1)
+                    );
+                }
+            }
+
+            return "";
+        }
+    </script>
+</body>
+</html>

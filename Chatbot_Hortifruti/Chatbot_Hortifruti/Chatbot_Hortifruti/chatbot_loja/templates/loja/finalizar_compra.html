@@ -1,0 +1,53 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finalizar Compra - Hortifruti</title>
+</head>
+<body>
+    <h1>Finalizar minha compra</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <h2>Dados do cliente</h2>
+
+        <label for="nome">Nome completo:</label><br>
+        <input type="text" id="nome" name="nome"
+               required><br><br>
+
+        <label for="telefone">Telefone:</label><br>
+        <input type="tel" id="telefone" name="telefone"
+               required><br><br>
+
+        <h2>Como deseja receber?</h2>
+
+        <label for="entrega">Forma de recebimento:</label><br>
+        <select id="entrega" name="entrega" required>
+            <option value="">Selecione</option>
+            <option value="entrega">Receber em casa</option>
+            <option value="retirada">Retirar na loja</option>
+        </select><br><br>
+
+        <label for="endereco">Endereço de entrega:</label><br>
+        <textarea id="endereco" name="endereco"
+                  rows="3"></textarea><br><br>
+
+        <h2>Forma de pagamento</h2>
+
+        <select name="pagamento" required>
+            <option value="">Selecione</option>
+            <option value="pix">PIX</option>
+            <option value="dinheiro">Dinheiro</option>
+            <option value="cartao">Cartão</option>
+        </select><br><br>
+
+        <button type="submit">Confirmar pedido</button>
+    </form>
+
+    <br>
+    <a href="{% url 'carrinho' %}">Voltar ao carrinho</a>
+</body>
+</html>
